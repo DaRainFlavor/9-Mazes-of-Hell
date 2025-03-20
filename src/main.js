@@ -12,6 +12,13 @@ const config = {
     height: 800,
     parent: 'game-container',
     backgroundColor: '#028af8',
+    physics: { // Add this block to enable physics
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 }, // No gravity for a top-down game
+            debug: false // Set to true to see physics debug information
+        }
+    },
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
