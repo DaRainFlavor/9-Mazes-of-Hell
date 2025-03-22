@@ -76,6 +76,14 @@ export class Game extends Scene {
         this.player.body.setSize(10, 12); // Adjust width and height
         this.player.body.setOffset(20, 27); // Adjust x and y offset
 
+        // Create vampire sprite
+        this.vampire = this.physics.add.sprite(570, 440, 'vampire-walk-down');
+        this.vampire.setScale(2.3);
+        
+        // Adjust the hitbox
+        this.vampire.body.setSize(10, 10); // Adjust width and height
+        this.vampire.body.setOffset(26, 33); // Adjust x and y offset
+        
         // Define animations
         this.createAnimations();
 
@@ -97,15 +105,7 @@ export class Game extends Scene {
                 }, 500);
             }
         });
-
-        this.player.setDepth(10);
-        this.physics.world.setBounds(0, 0, this.game.config.width, this.game.config.height);
-        this.player.setCollideWorldBounds(true);
-
-        // Create vampire sprite
-        this.vampire = this.physics.add.sprite(270, 210, 'vampire-walk-down');
-        this.vampire.setScale(2.3);
-
+        
         // Define keyboard inputs for vampire
         this.keys = this.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -113,6 +113,13 @@ export class Game extends Scene {
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D
         });
+
+        this.player.setDepth(10);
+        this.vampire.setDepth(10);
+        this.physics.world.setBounds(0, 0, this.game.config.width, this.game.config.height);
+        this.player.setCollideWorldBounds(true);
+        this.vampire.setCollideWorldBounds(true);
+
 
         this.textures.each(texture => {
             texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -131,6 +138,7 @@ export class Game extends Scene {
         let waterCoastsTileset = map.addTilesetImage('water_coasts', 'water_coasts');
         let waterDetilazationTileset = map.addTilesetImage('Water_detilazation', 'Water_detilazation');
 
+        let treeLayer = map.createLayer('tree', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
         let waterLayer = map.createLayer('water', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
         let waterDetalizationLayer = map.createLayer('water_detalization', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
         let groundLayer = map.createLayer('ground', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
@@ -146,8 +154,22 @@ export class Game extends Scene {
         let object2Layer = map.createLayer('object2', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
         let foliageLayer = map.createLayer('foliage', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
 
-        borderLayer.setCollisionByProperty({ collide: true });
-        this.physics.add.collider(this.player, borderLayer);
+        treeLayer.setDepth(20);
+
+        let layers = [
+            treeLayer, waterLayer, waterDetalizationLayer, groundLayer, bridgeLayer, elevatedSpaceLayer,
+            curvedGroundLayer, foliage2Layer, borderLayer, object4Layer, object1Layer,
+            object3Layer, bricksLayer, object2Layer, foliageLayer
+        ];
+        
+        // Set collision for all layers
+        layers.forEach(layer => {
+            if (layer) {
+                layer.setCollisionByProperty({ collide: true });
+                this.physics.add.collider(this.player, layer);
+                this.physics.add.collider(this.vampire, layer);
+            }
+        });
 
         foliageLayer.setScale(2);
         object2Layer.setScale(2);
@@ -163,6 +185,7 @@ export class Game extends Scene {
         groundLayer.setScale(2);
         waterDetalizationLayer.setScale(2);
         waterLayer.setScale(2);
+        treeLayer.setScale(2);
         
         this.animatedTiles.init(map);
 
