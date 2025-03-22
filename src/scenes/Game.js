@@ -12,6 +12,7 @@ export class Game extends Scene {
     }
 
     preload() {
+        this.load.audio('gameMusic', 'assets/music/Adrian Vaflor - 9 Mazes of Hell (Game Loop) 2025-03-21 01_28.m4a');
         // Map
         this.load.tilemapTiledJSON('map', './assets/map1.json');
         this.load.image('Ground_rocks', './assets/Tiled_files/Ground_rocks.png');
@@ -51,9 +52,17 @@ export class Game extends Scene {
     }
 
     create() {
+        this.sound.pauseOnBlur = false;
+        this.music = this.sound.add('gameMusic', { loop: true, volume: 0.5 });
+        this.music.play();
+
         // Create player sprite
         this.player = this.physics.add.sprite(270, 210, 'warrior-idle-right');
         this.player.setScale(2);
+
+        // Adjust the hitbox
+        this.player.body.setSize(10, 12); // Adjust width and height
+        this.player.body.setOffset(20, 27); // Adjust x and y offset
 
         // Define animations
         this.createAnimations();
@@ -80,6 +89,11 @@ export class Game extends Scene {
         this.player.setDepth(10);
         this.physics.world.setBounds(0, 0, this.game.config.width, this.game.config.height);
         this.player.setCollideWorldBounds(true);
+
+        this.textures.each(texture => {
+            texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        });
+        // this.physics.world.createDebugGraphic();
     }
 
     createAnimations() {
@@ -108,6 +122,8 @@ export class Game extends Scene {
         let object2Layer = map.createLayer('object2', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
         let foliageLayer = map.createLayer('foliage', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
 
+        borderLayer.setCollisionByProperty({ collide: true });
+        this.physics.add.collider(this.player, borderLayer);
 
         foliageLayer.setScale(2);
         object2Layer.setScale(2);

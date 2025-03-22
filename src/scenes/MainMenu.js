@@ -5,7 +5,17 @@ export class MainMenu extends Scene {
         super('MainMenu');
     }
 
+    preload() {
+        // Load the music file
+        this.load.audio('menuMusic', 'assets/music/Adrian Vaflor - 9 Mazes of Hell (Intro and Main Menu Loop) 2025-03-21 01_29.m4a');
+    }
+
     create() {
+        this.sound.pauseOnBlur = false
+        // Play the music
+        this.music = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
+        this.music.play();
+
         // Add the background and scale it to fit the screen
         const bg = this.add.image(0, 0, 'background').setOrigin(0, 0);
         bg.setDisplaySize(this.scale.width, this.scale.height); // Resize to fill screen
@@ -19,6 +29,7 @@ export class MainMenu extends Scene {
 
         startButton.setInteractive();
         startButton.on('pointerdown', () => {
+            this.music.stop(); // Stop music when switching scenes
             this.scene.start('Game');
         });
 
@@ -33,9 +44,13 @@ export class MainMenu extends Scene {
         instructionsButton.on('pointerdown', () => {
             this.showInstructionsPopup();
         });
+    }
 
-     
-        
+    // Stop the music when this scene is stopped or changed
+    shutdown() {
+        if (this.music) {
+            this.music.stop();
+        }
     }
 
     // Function to show Instructions popup
@@ -65,5 +80,4 @@ export class MainMenu extends Scene {
             closeButton.destroy();
         });
     }
-
 }
