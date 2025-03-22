@@ -49,6 +49,18 @@ export class Game extends Scene {
         this.load.spritesheet('warrior-attack1-up', './assets/Sprites/Raphael/WarriorUpAttack01.png', { frameWidth: 48, frameHeight: 48 });
         this.load.spritesheet('warrior-attack2-up', './assets/Sprites/Raphael/WarriorUpAttack02.png', { frameWidth: 48, frameHeight: 48 });
         this.load.spritesheet('warrior-attack3-up', './assets/Sprites/Raphael/WarriorUpAttack03.png', { frameWidth: 48, frameHeight: 48 });
+
+        // Vampire Walk
+        this.load.spritesheet('vampire-walk-down', './assets/Sprites/Demon/Vampires3Walk.png', { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('vampire-walk-up', './assets/Sprites/Demon/Vampires3Walk.png', { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('vampire-walk-left', './assets/Sprites/Demon/Vampires3Walk.png', { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('vampire-walk-right', './assets/Sprites/Demon/Vampires3Walk.png', { frameWidth: 64, frameHeight: 64 });
+        
+        // Vampire Idle
+        this.load.spritesheet('vampire-idle-down', './assets/Sprites/Demon/Vampires3Idle.png', { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('vampire-idle-up', './assets/Sprites/Demon/Vampires3Idle.png', { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('vampire-idle-left', './assets/Sprites/Demon/Vampires3Idle.png', { frameWidth: 64, frameHeight: 64 });
+        this.load.spritesheet('vampire-idle-right', './assets/Sprites/Demon/Vampires3Idle.png', { frameWidth: 64, frameHeight: 64 });
     }
 
     create() {
@@ -89,6 +101,18 @@ export class Game extends Scene {
         this.player.setDepth(10);
         this.physics.world.setBounds(0, 0, this.game.config.width, this.game.config.height);
         this.player.setCollideWorldBounds(true);
+
+        // Create vampire sprite
+        this.vampire = this.physics.add.sprite(270, 210, 'vampire-walk-down');
+        this.vampire.setScale(2.3);
+
+        // Define keyboard inputs for vampire
+        this.keys = this.input.keyboard.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            right: Phaser.Input.Keyboard.KeyCodes.D
+        });
 
         this.textures.each(texture => {
             texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -245,6 +269,45 @@ export class Game extends Scene {
             frameRate: 10,
             repeat: 0
         });
+
+        
+        // Vampire animations
+        // Vampire walk
+        this.anims.create({ 
+            key: 'vampire-walk-down', 
+            frames: this.anims.generateFrameNumbers('vampire-walk-down', { start: 0, end: 5 }), 
+            frameRate: 15, 
+            repeat: -1 
+        });
+
+        this.anims.create({ 
+            key: 'vampire-walk-up', 
+            frames: this.anims.generateFrameNumbers('vampire-walk-up', { start: 6, end: 11 }), 
+            frameRate: 15, 
+            repeat: -1 
+        });
+
+        this.anims.create({ 
+            key: 'vampire-walk-left', 
+            frames: this.anims.generateFrameNumbers('vampire-walk-left', { start: 12, end: 17 }), 
+            frameRate: 15, 
+            repeat: -1 
+        });
+
+        this.anims.create({ 
+            key: 'vampire-walk-right', 
+            frames: this.anims.generateFrameNumbers('vampire-walk-right', { start: 18, end: 23 }), 
+            frameRate: 15, 
+            repeat: -1 
+        });
+
+        // Vampire Idle
+        // Vampire Idle Animations
+        this.anims.create({ key: 'vampire-idle-down', frames: this.anims.generateFrameNumbers('vampire-idle-down', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'vampire-idle-up', frames: this.anims.generateFrameNumbers('vampire-idle-up', { start: 4, end: 7 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'vampire-idle-left', frames: this.anims.generateFrameNumbers('vampire-idle-left', { start: 8, end: 11 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'vampire-idle-right', frames: this.anims.generateFrameNumbers('vampire-idle-right', { start: 12, end: 15 }), frameRate: 6, repeat: -1 });
+
     }
 
     update() {
@@ -342,6 +405,47 @@ export class Game extends Scene {
                     this.player.anims.play('attack-left3', true);
                     this.attackCount = 1; // Reset attack cycle
                 }
+            }
+        }
+            // Reset vampire velocity
+        this.vampire.setVelocity(0);
+
+        let moving = false;
+
+        if (this.keys.left.isDown) {
+            this.vampire.setVelocityX(-100);
+            this.vampire.anims.play('vampire-walk-left', true);
+            this.vampire.direction = 'left';
+            moving = true;
+        } else if (this.keys.right.isDown) {
+            this.vampire.setVelocityX(100);
+            this.vampire.anims.play('vampire-walk-right', true);
+            this.vampire.direction = 'right';
+            moving = true;
+        } else {
+            this.vampire.setVelocityX(0);
+        }
+
+        if (this.keys.up.isDown) {
+            this.vampire.setVelocityY(-100);
+            this.vampire.anims.play('vampire-walk-up', true);
+            this.vampire.direction = 'up';
+            moving = true;
+        } else if (this.keys.down.isDown) {
+            this.vampire.setVelocityY(100);
+            this.vampire.anims.play('vampire-walk-down', true);
+            this.vampire.direction = 'down';
+            moving = true;
+        } else {
+            this.vampire.setVelocityY(0);
+        }
+
+        // If no keys are pressed, play the idle animation
+        if (!moving) {
+            if (this.vampire.direction) {
+                this.vampire.anims.play(`vampire-idle-${this.vampire.direction}`, true);
+            } else {
+                this.vampire.anims.play('vampire-idle-down', true); // Default idle animation
             }
         }
     }
