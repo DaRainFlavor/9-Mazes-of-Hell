@@ -1,14 +1,10 @@
 import { Scene } from 'phaser';
+import { Warrior } from '../entities/Warrior';
+import { Vampire } from '../entities/Vampire';
 
 export class Game extends Scene {
     constructor() {
         super('Game');
-        this.isAttacking = false; // Track if attacking
-        this.attackCount = 1; // Track which attack is next
-        this.attackTimer = null; // Timer for resetting attack combo
-        this.facingRight = true; // Track the direction the player is facing
-        this.facingDown = false; // Track if the player is facing down
-        this.facingUp = false; // Track if the player is facing up
     }
 
     preload() {
@@ -68,43 +64,13 @@ export class Game extends Scene {
         this.music = this.sound.add('gameMusic', { loop: true, volume: 0.5 });
         this.music.play();
 
-        // Create player sprite
-        this.player = this.physics.add.sprite(270, 210, 'warrior-idle-right');
-        this.player.setScale(2);
-
-        // Adjust the hitbox
-        this.player.body.setSize(10, 12); // Adjust width and height
-        this.player.body.setOffset(20, 27); // Adjust x and y offset
-
-        // Create vampire sprite
-        this.vampire = this.physics.add.sprite(570, 440, 'vampire-walk-down');
-        this.vampire.setScale(2.3);
-        
-        // Adjust the hitbox
-        this.vampire.body.setSize(10, 10); // Adjust width and height
-        this.vampire.body.setOffset(26, 33); // Adjust x and y offset
-        
-        // Define animations
-        this.createAnimations();
-
-        // Play idle animation by default
-        this.player.anims.play('idle-right');
+        // Create player and vampire using the new classes
+        this.player = new Warrior(this, 270, 210);
+        this.vampire = new Vampire(this, 570, 440);
 
         // Create keyboard inputs
         this.cursors = this.input.keyboard.createCursorKeys();
         this.attackKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-        // Listen for animation complete event
-        this.player.on('animationcomplete', (animation) => {
-            if (animation.key.startsWith('attack-')) {
-                this.isAttacking = false; // Allow new actions
-
-                // Reset attack combo if no new attack happens within 500ms
-                this.attackTimer = setTimeout(() => {
-                    this.attackCount = 1;
-                }, 500);
-            }
-        });
         
         // Define keyboard inputs for vampire
         this.keys = this.input.keyboard.addKeys({
@@ -120,14 +86,16 @@ export class Game extends Scene {
         this.player.setCollideWorldBounds(true);
         this.vampire.setCollideWorldBounds(true);
 
-
         this.textures.each(texture => {
             texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         });
-        // this.physics.world.createDebugGraphic();
+
+        // Create map and animations
+        this.createMap();
+        this.createAnimations();
     }
 
-    createAnimations() {
+    createMap() {
         let map = this.make.tilemap({
             key: 'map'
         });
@@ -171,24 +139,17 @@ export class Game extends Scene {
             }
         });
 
-        foliageLayer.setScale(2);
-        object2Layer.setScale(2);
-        bricksLayer.setScale(2);
-        object3Layer.setScale(2);
-        object1Layer.setScale(2);
-        object4Layer.setScale(2);
-        borderLayer.setScale(2);
-        foliage2Layer.setScale(2);
-        curvedGroundLayer.setScale(2);
-        elevatedSpaceLayer.setScale(2);
-        bridgeLayer.setScale(2);
-        groundLayer.setScale(2);
-        waterDetalizationLayer.setScale(2);
-        waterLayer.setScale(2);
-        treeLayer.setScale(2);
+        // Scale all layers
+        layers.forEach(layer => {
+            if (layer) {
+                layer.setScale(2);
+            }
+        });
         
         this.animatedTiles.init(map);
+    }
 
+    createAnimations() {
         // Right animations
         this.anims.create({ key: 'walk-right', frames: this.anims.generateFrameNumbers('warrior-walk-right', { start: 0, end: 7 }), frameRate: 15, repeat: -1 });
         this.anims.create({ key: 'idle-right', frames: this.anims.generateFrameNumbers('warrior-idle-right', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
@@ -334,142 +295,15 @@ export class Game extends Scene {
     }
 
     update() {
-        if (this.isAttacking) return; // Prevent movement while attacking
-
-        // Reset velocity
-        this.player.setVelocity(0);
-
-        // Movement Logic
-        if (this.cursors.right.isDown) {
-            this.player.setVelocityX(70);
-            this.player.anims.play('walk-right', true);
-            this.facingRight = true;
-            this.facingDown = false;
-            this.facingUp = false;
-        } else if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-70);
-            this.player.anims.play('walk-left', true);
-            this.facingRight = false;
-            this.facingDown = false;
-            this.facingUp = false;
-        } else if (this.cursors.down.isDown) {
-            this.player.setVelocityY(70);
-            this.player.anims.play('walk-down', true);
-            this.facingDown = true;
-            this.facingUp = false;
-        } else if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-70);
-            this.player.anims.play('walk-up', true);
-            this.facingUp = true;
-            this.facingDown = false;
-        } else {
-            // Idle animations
-            if (this.facingDown) {
-                this.player.anims.play('idle-down', true);
-            } else if (this.facingUp) {
-                this.player.anims.play('idle-up', true);
-            } else {
-                this.player.anims.play(this.facingRight ? 'idle-right' : 'idle-left', true);
-            }
-        }
-
-        // Attack combo logic
+        // Update player
+        this.player.update(this.cursors);
+        
+        // Handle attack
         if (Phaser.Input.Keyboard.JustDown(this.attackKey)) {
-            clearTimeout(this.attackTimer); // Stop attack reset timer
-            this.isAttacking = true;
-
-            if (this.facingUp) {
-                // Prioritize facing up over other directions
-                if (this.attackCount === 1) {
-                    this.player.anims.play('attack-up1', true);
-                    this.attackCount = 2;
-                }
-                else if (this.attackCount === 2) {
-                    this.player.anims.play('attack-up2', true);
-                    this.attackCount = 3;
-                } else {
-                    this.player.anims.play('attack-up3', true);
-                    this.attackCount = 1; // Reset attack cycle
-                }
-            } else if (this.facingDown) {
-                if (this.attackCount === 1) {
-                    this.player.anims.play('attack-down1', true);
-                    this.attackCount = 2;
-                }
-                else if (this.attackCount === 2) {
-                    this.player.anims.play('attack-down2', true);
-                    this.attackCount = 3;
-                } else {
-                    this.player.anims.play('attack-down3', true);
-                    this.attackCount = 1; // Reset attack cycle
-                }
-            } else if (this.facingRight) {
-                if (this.attackCount === 1) {
-                    this.player.anims.play('attack-right1', true);
-                    this.attackCount = 2;
-                }
-                else if (this.attackCount === 2) {
-                    this.player.anims.play('attack-right2', true);
-                    this.attackCount = 3;
-                } else {
-                    this.player.anims.play('attack-right3', true);
-                    this.attackCount = 1; // Reset attack cycle
-                }
-            } else {
-                // Default to left attack if no other direction is active
-                if (this.attackCount === 1) {
-                    this.player.anims.play('attack-left1', true);
-                    this.attackCount = 2;
-                }
-                else if (this.attackCount === 2) {
-                    this.player.anims.play('attack-left2', true);
-                    this.attackCount = 3;
-                } else {
-                    this.player.anims.play('attack-left3', true);
-                    this.attackCount = 1; // Reset attack cycle
-                }
-            }
+            this.player.attack();
         }
-            // Reset vampire velocity
-        this.vampire.setVelocity(0);
-
-        let moving = false;
-
-        if (this.keys.left.isDown) {
-            this.vampire.setVelocityX(-100);
-            this.vampire.anims.play('vampire-walk-left', true);
-            this.vampire.direction = 'left';
-            moving = true;
-        } else if (this.keys.right.isDown) {
-            this.vampire.setVelocityX(100);
-            this.vampire.anims.play('vampire-walk-right', true);
-            this.vampire.direction = 'right';
-            moving = true;
-        } else {
-            this.vampire.setVelocityX(0);
-        }
-
-        if (this.keys.up.isDown) {
-            this.vampire.setVelocityY(-100);
-            this.vampire.anims.play('vampire-walk-up', true);
-            this.vampire.direction = 'up';
-            moving = true;
-        } else if (this.keys.down.isDown) {
-            this.vampire.setVelocityY(100);
-            this.vampire.anims.play('vampire-walk-down', true);
-            this.vampire.direction = 'down';
-            moving = true;
-        } else {
-            this.vampire.setVelocityY(0);
-        }
-
-        // If no keys are pressed, play the idle animation
-        if (!moving) {
-            if (this.vampire.direction) {
-                this.vampire.anims.play(`vampire-idle-${this.vampire.direction}`, true);
-            } else {
-                this.vampire.anims.play('vampire-idle-down', true); // Default idle animation
-            }
-        }
+        
+        // Update vampire
+        this.vampire.update(this.keys);
     }
 }
