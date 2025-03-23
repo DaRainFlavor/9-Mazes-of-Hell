@@ -50,4 +50,8 @@ export class Vampire extends Character {
             }
         }
     }
+
+    onCollisionEnter(other) {
+        console.log('Vampire is colliding with:', other);
+    }
 } 

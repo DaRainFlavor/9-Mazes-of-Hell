@@ -135,7 +135,7 @@ export class Game extends Scene {
             if (layer) {
                 layer.setCollisionByProperty({ collide: true });
                 this.physics.add.collider(this.player, layer);
-                this.physics.add.collider(this.vampire, layer);
+                this.physics.add.collider(this.vampire, layer, this.vampire.onCollisionEnter);
             }
         });
 
