@@ -3,20 +3,19 @@ import { Game } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
+import { Story } from './scenes/Story'; // Import Story Scene
 
-//  Find out more information about the Game Config at:
-//  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config = {
     type: Phaser.AUTO,
     width: 1216,
     height: 800,
     parent: 'game-container',
     backgroundColor: '#028af8',
-    physics: { // Add this block to enable physics
+    physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0 }, // No gravity for a top-down game
-            debug: false // Set to true to see physics debug information
+            gravity: { y: 0 },
+            debug: false
         }
     },
     scale: {
@@ -26,6 +25,7 @@ const config = {
     scene: [
         Boot,
         Preloader,
+        Story,      // Add Story Scene here (right after Preloader)
         MainMenu,
         Game,
         GameOver
