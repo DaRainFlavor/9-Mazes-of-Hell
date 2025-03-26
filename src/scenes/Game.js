@@ -66,7 +66,10 @@ export class Game extends Scene {
 
         // Create player and vampire using the new classes
         this.player = new Warrior(this, 270, 210);
-        this.vampire = new Vampire(this, 570, 440);
+        this.vampire = new Vampire(this, 950, 410);
+        this.vampire2 = new Vampire(this, 600, 600);
+        this.vampire3 = new Vampire(this, 230, 575);
+        this.vampire4 = new Vampire(this, 700, 20);
 
         // Create keyboard inputs
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -82,10 +85,15 @@ export class Game extends Scene {
 
         this.player.setDepth(10);
         this.vampire.setDepth(10);
+        this.vampire2.setDepth(10);
+        this.vampire3.setDepth(10);
+        this.vampire4.setDepth(10);
         this.physics.world.setBounds(0, 0, this.game.config.width, this.game.config.height);
         this.player.setCollideWorldBounds(true);
         this.vampire.setCollideWorldBounds(true);
-
+        this.vampire2.setCollideWorldBounds(true);
+        this.vampire3.setCollideWorldBounds(true);
+        this.vampire4.setCollideWorldBounds(true);
         this.textures.each(texture => {
             texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         });
@@ -136,6 +144,9 @@ export class Game extends Scene {
                 layer.setCollisionByProperty({ collide: true });
                 this.physics.add.collider(this.player, layer);
                 this.physics.add.collider(this.vampire, layer, this.vampire.onCollisionEnter);
+                this.physics.add.collider(this.vampire2, layer, this.vampire2.onCollisionEnter);
+                this.physics.add.collider(this.vampire3, layer, this.vampire3.onCollisionEnter);
+                this.physics.add.collider(this.vampire4, layer, this.vampire4.onCollisionEnter);
             }
         });
 
@@ -151,19 +162,19 @@ export class Game extends Scene {
 
     createAnimations() {
         // Right animations
-        this.anims.create({ key: 'walk-right', frames: this.anims.generateFrameNumbers('warrior-walk-right', { start: 0, end: 7 }), frameRate: 15, repeat: -1 });
+        this.anims.create({ key: 'walk-right', frames: this.anims.generateFrameNumbers('warrior-walk-right', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
         this.anims.create({ key: 'idle-right', frames: this.anims.generateFrameNumbers('warrior-idle-right', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
 
         // Left animations
-        this.anims.create({ key: 'walk-left', frames: this.anims.generateFrameNumbers('warrior-walk-left', { start: 0, end: 7 }), frameRate: 15, repeat: -1 });
+        this.anims.create({ key: 'walk-left', frames: this.anims.generateFrameNumbers('warrior-walk-left', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
         this.anims.create({ key: 'idle-left', frames: this.anims.generateFrameNumbers('warrior-idle-left', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
 
         // Down animations
-        this.anims.create({ key: 'walk-down', frames: this.anims.generateFrameNumbers('warrior-walk-down', { start: 0, end: 7 }), frameRate: 15, repeat: -1 });
+        this.anims.create({ key: 'walk-down', frames: this.anims.generateFrameNumbers('warrior-walk-down', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
         this.anims.create({ key: 'idle-down', frames: this.anims.generateFrameNumbers('warrior-idle-down', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
 
         // UP animations
-        this.anims.create({ key: 'walk-up', frames: this.anims.generateFrameNumbers('warrior-walk-up', { start: 0, end: 7 }), frameRate: 15, repeat: -1 });
+        this.anims.create({ key: 'walk-up', frames: this.anims.generateFrameNumbers('warrior-walk-up', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
         this.anims.create({ key: 'idle-up', frames: this.anims.generateFrameNumbers('warrior-idle-up', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
  
         // Right attack animations
@@ -304,6 +315,9 @@ export class Game extends Scene {
         }
         
         // Update vampire
-        this.vampire.update(this.keys);
+        this.vampire.update();
+        this.vampire2.update();
+        this.vampire3.update();
+        this.vampire4.update();
     }
 }
