@@ -4,6 +4,8 @@ import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
 import { Story } from './scenes/Story'; // Import Story Scene
+import { Success } from './scenes/Success';
+
 
 const config = {
     type: Phaser.AUTO,
@@ -28,6 +30,7 @@ const config = {
         Story,      // Add Story Scene here (right after Preloader)
         MainMenu,
         Game,
+        Success,
         GameOver
     ]
 };

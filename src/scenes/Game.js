@@ -71,6 +71,8 @@ export class Game extends Scene {
         this.vampire3 = new Vampire(this, 230, 575);
         this.vampire4 = new Vampire(this, 700, 20);
 
+        this.physics.add.overlap(this.player, [this.vampire, this.vampire2, this.vampire3, this.vampire4], this.handlePlayerVampireCollision, null, this);
+
         // Create keyboard inputs
         this.cursors = this.input.keyboard.createCursorKeys();
         this.attackKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -98,9 +100,29 @@ export class Game extends Scene {
             texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         });
 
+        // Define success area (lower right corner)
+        this.successArea = new Phaser.Geom.Rectangle(
+            this.game.config.width - 120,  // x position (200px from right)
+            this.game.config.height-100, // y position (200px from bottom)
+            50,                          // width 
+            120                           // height
+        );
+
+        // For debug visualization - draw the success area rectangle
+        // const graphics = this.add.graphics();
+        // graphics.lineStyle(2, 0x00ff00, 1); // Green border
+        // graphics.strokeRectShape(this.successArea);
+        // graphics.setDepth(100); // Make sure it's on top
+
         // Create map and animations
         this.createMap();
         this.createAnimations();
+    }
+
+    handlePlayerVampireCollision(player, vampire) {
+        console.log('Game Over: Collided with a vampire!');
+        this.music.stop(); // Stop game music
+        this.scene.start('GameOver'); // Transition to GameOver scene
     }
 
     createMap() {
@@ -319,5 +341,12 @@ export class Game extends Scene {
         this.vampire2.update();
         this.vampire3.update();
         this.vampire4.update();
+
+        // Check if player is in success area
+        if (Phaser.Geom.Rectangle.Contains(this.successArea, this.player.x, this.player.y)) {
+            console.log('Level completed!');
+            this.music.stop(); // Stop game music
+            this.scene.start('Success'); // Transition to Success scene
+        }
     }
 }
