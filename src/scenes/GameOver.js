@@ -47,6 +47,23 @@ export class GameOver extends Scene {
       this.scene.start("MainMenu");
     });
 
+    // Return to Main Menu button
+    const retryButton = this.add
+      .text(this.scale.width / 2, 460, "Retry", {
+        fontFamily: "Arial Black",
+        fontSize: 38,
+        color: "#ffffff",
+        stroke: "#000000",
+        strokeThickness: 8,
+        align: "center",
+      })
+      .setOrigin(0.5, -3);
+    retryButton.setInteractive();
+    retryButton.on("pointerdown", () => {
+      this.music.stop(); // Stop music when switching scenes
+      this.scene.start("Game");
+    });
+
     this.cameras.main.setBackgroundColor("#000000");
     this.add
       .text(512, 384, "YOU HAVE PERISHED", {
