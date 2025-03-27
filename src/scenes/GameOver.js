@@ -21,13 +21,13 @@ export class GameOver extends Scene {
     const bg = this.add.image(0, 0, "gameOverBG").setOrigin(0, 0);
     bg.setDisplaySize(width, height);
 
+    // Scream SFX
+    this.music = this.sound.add("scream", { loop: false, volume: 1 });
+    this.music.play();
+
     // Music
     this.sound.pauseOnBlur = false;
     this.music = this.sound.add("gameOverMusic", { loop: true, volume: 0.75 });
-    this.music.play();
-
-    // Scream SFX
-    this.music = this.sound.add("scream", { loop: false, volume: 1 });
     this.music.play();
 
     // Return to Main Menu button
@@ -77,6 +77,7 @@ export class GameOver extends Scene {
 
   shutdown() {
     if (this.music) {
+      this.music.stop();
       this.music.stop();
     }
   }
