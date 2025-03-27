@@ -24,13 +24,13 @@ const config = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   scene: [
-    // Boot,
-    // Preloader,
-    // Story, // Add Story Scene here (right after Preloader)
-    // MainMenu,
-    // Game,
+    Boot,
+    Preloader,
+    Story, // Add Story Scene here (right after Preloader)
+    MainMenu,
+    Game,
     Success,
-    // GameOver,
+    GameOver,
   ],
 };
 
