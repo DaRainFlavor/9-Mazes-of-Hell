@@ -6,14 +6,13 @@ export class Story extends Scene {
     }
 
     preload() {
-        this.load.image('storyBackground', 'assets/story_bg.png'); // Dark, eerie background
+        this.load.image('storyBackground', 'assets/story_bg.png');
     }
 
     create() {
         const bg = this.add.image(0, 0, 'storyBackground').setOrigin(0, 0);
         bg.setDisplaySize(this.scale.width, this.scale.height);
 
-        // Story text sequence
         const storyTexts = [
             "Abandon all hope, ye who enter here...",
             "A lost soul, cast into the depths of Hell, must find his way out.",
@@ -24,7 +23,7 @@ export class Story extends Scene {
         ];
 
         let textIndex = 0;
-        let typingFinished = false; // Prevent skipping
+        let typingFinished = false;
 
         let storyText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, '', {
             fontFamily: 'Arial',
@@ -42,27 +41,38 @@ export class Story extends Scene {
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 6
-        }).setOrigin(0.5).setAlpha(0); // Hidden initially
+        }).setOrigin(0.5).setAlpha(0);
+
+        let skipButton = this.add.text(this.scale.width / 2, this.scale.height - 50, 'Skip', {
+            fontFamily: 'Arial Black',
+            fontSize: 24,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6
+        }).setOrigin(0.5).setInteractive();
+
+        skipButton.on('pointerdown', () => {
+            this.scene.start('MainMenu');
+        });
 
         this.input.on('pointerdown', () => {
-            if (typingFinished) { // Only allow clicking when text is done
+            if (typingFinished) {
                 if (textIndex < storyTexts.length) {
-                    typingFinished = false; // Lock clicks
-                    continueText.setAlpha(0); // Hide "Click to Continue"
+                    typingFinished = false;
+                    continueText.setAlpha(0);
                     this.typeText(storyText, storyTexts[textIndex], () => {
-                        typingFinished = true; // Unlock clicks
-                        continueText.setAlpha(1); // Show "Click to Continue"
+                        typingFinished = true;
+                        continueText.setAlpha(1);
                     });
                     textIndex++;
                 } else {
-                    this.scene.start('MainMenu'); // Transition to Main Menu
+                    this.scene.start('MainMenu');
                 }
             }
         });
 
-        // Start typing the first line
         this.typeText(storyText, storyTexts[textIndex], () => {
-            typingFinished = true; // Unlock first click
+            typingFinished = true;
             continueText.setAlpha(1);
         });
         textIndex++;
