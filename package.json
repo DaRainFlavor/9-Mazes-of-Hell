@@ -37,6 +37,7 @@
     "dependencies": {
         "dat.gui": "^0.7.9",
         "phaser": "^3.88.2",
-        "phaser-animated-tiles": "^2.0.2"
+        "phaser-animated-tiles": "^2.0.2",
+        "webfontloader": "^1.6.28"
     }
 }
