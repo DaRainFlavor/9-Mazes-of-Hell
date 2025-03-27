@@ -47,7 +47,7 @@ export class GameOver extends Scene {
       this.scene.start("MainMenu");
     });
 
-    // Return to Main Menu button
+    // Retry button
     const retryButton = this.add
       .text(this.scale.width / 2, 460, "Retry", {
         fontFamily: "Arial Black",
