@@ -184,19 +184,19 @@ export class Game extends Scene {
 
     createAnimations() {
         // Right animations
-        this.anims.create({ key: 'walk-right', frames: this.anims.generateFrameNumbers('warrior-walk-right', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: 'walk-right', frames: this.anims.generateFrameNumbers('warrior-walk-right', { start: 0, end: 7 }), frameRate: 25, repeat: -1 });
         this.anims.create({ key: 'idle-right', frames: this.anims.generateFrameNumbers('warrior-idle-right', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
 
         // Left animations
-        this.anims.create({ key: 'walk-left', frames: this.anims.generateFrameNumbers('warrior-walk-left', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: 'walk-left', frames: this.anims.generateFrameNumbers('warrior-walk-left', { start: 0, end: 7 }), frameRate: 25, repeat: -1 });
         this.anims.create({ key: 'idle-left', frames: this.anims.generateFrameNumbers('warrior-idle-left', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
 
         // Down animations
-        this.anims.create({ key: 'walk-down', frames: this.anims.generateFrameNumbers('warrior-walk-down', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: 'walk-down', frames: this.anims.generateFrameNumbers('warrior-walk-down', { start: 0, end: 7 }), frameRate: 25, repeat: -1 });
         this.anims.create({ key: 'idle-down', frames: this.anims.generateFrameNumbers('warrior-idle-down', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
 
         // UP animations
-        this.anims.create({ key: 'walk-up', frames: this.anims.generateFrameNumbers('warrior-walk-up', { start: 0, end: 7 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: 'walk-up', frames: this.anims.generateFrameNumbers('warrior-walk-up', { start: 0, end: 7 }), frameRate: 25, repeat: -1 });
         this.anims.create({ key: 'idle-up', frames: this.anims.generateFrameNumbers('warrior-idle-up', { start: 0, end: 3 }), frameRate: 6, repeat: -1 });
  
         // Right attack animations

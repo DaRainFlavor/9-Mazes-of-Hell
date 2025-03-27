@@ -55,24 +55,43 @@ export class MainMenu extends Scene {
 
     // Function to show Instructions popup
     showInstructionsPopup() {
-        // Create a semi-transparent background for the popup
-        const popupBackground = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, 0.7)
-            .setOrigin(0, 0)
-            .setInteractive();
-
+        // Create a semi-transparent overlay
+        const popupBackground = this.add.rectangle(
+            this.scale.width / 2, this.scale.height / 2, 
+            this.scale.width * 0.6, this.scale.height * 0.5, 
+            0x000000, 0.94
+        ).setOrigin(0.5);
+    
+        // Add a border effect (optional)
+        popupBackground.setStrokeStyle(4, 0xffffff);
+    
         // Create instructions text
-        const instructionsText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 50, 'Instructions: Use arrow keys to move', {
-            fontFamily: 'Arial', fontSize: 32, color: '#ffffff',
-            align: 'center'
-        }).setOrigin(0.5);
-
-        // Create a button to close the popup
-        const closeButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 50, 'Close', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
-
+        const instructionsText = this.add.text(
+            this.scale.width / 2, this.scale.height / 2 - 60, 
+            'How to Play:\n- Use arrow keys to move.\n- Avoid the demons.\n- Reach the exit to proceed.\n- If a demon catches you, game over.', 
+            {
+                fontFamily: 'Arial', 
+                fontSize: 28, 
+                color: '#ffffff', 
+                align: 'center',
+                wordWrap: { width: this.scale.width * 0.5 } 
+            }
+        ).setOrigin(0.5);
+    
+        // Create a close button
+        const closeButton = this.add.text(
+            this.scale.width / 2, this.scale.height / 2 + 100, 
+            'Close', 
+            {
+                fontFamily: 'Arial Black', 
+                fontSize: 38, 
+                color: '#ffffff', 
+                stroke: '#000000', 
+                strokeThickness: 8,
+                align: 'center'
+            }
+        ).setOrigin(0.5);
+    
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => {
             popupBackground.destroy();
@@ -80,4 +99,5 @@ export class MainMenu extends Scene {
             closeButton.destroy();
         });
     }
+    
 }

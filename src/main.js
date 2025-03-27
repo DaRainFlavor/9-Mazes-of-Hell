@@ -11,7 +11,7 @@ const config = {
   width: 1216,
   height: 800,
   parent: "game-container",
-  backgroundColor: "#028af8",
+  backgroundColor: "#631C1B",
   physics: {
     default: "arcade",
     arcade: {
@@ -26,7 +26,7 @@ const config = {
   scene: [
     Boot,
     Preloader,
-    Story, // Add Story Scene here (right after Preloader)
+    Story,
     MainMenu,
     Game,
     Success,

@@ -4,6 +4,7 @@ export class Warrior extends Character {
     constructor(scene, x, y) {
         super(scene, x, y, 'warrior-idle-right');
         this.setScale(2);
+        this.speed = 100;
         
         // Adjust the hitbox
         this.body.setSize(10, 12);
