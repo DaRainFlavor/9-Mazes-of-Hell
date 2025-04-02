@@ -11,7 +11,7 @@ export class Vampire extends Character {
 
         this.speed = 100;
         this.directions = ['left', 'right', 'up', 'down']; // Removed 'idle' from here
-        this.currentDirection = Phaser.Math.RND.pick(this.directions);
+        this.currentDirection = 'right';
         this.isIdle = false;
         this.lastDirection = 'down'; // Default direction
 
@@ -36,7 +36,6 @@ export class Vampire extends Character {
         }
 
         this.move(this.currentDirection);
-        this.playAnimation(`vampire-walk-${this.currentDirection}`);
 
         if (this.body.blocked.left || this.body.blocked.right || 
             this.body.blocked.up || this.body.blocked.down) {
@@ -63,6 +62,7 @@ export class Vampire extends Character {
                 case 'down': this.body.setVelocity(0, this.speed); break;
             }
         }
+        this.playAnimation(`vampire-walk-${direction}`);
     }
 
     changeDirection() {
@@ -75,12 +75,91 @@ export class Vampire extends Character {
     }
 
     onCollisionEnter(other) {
-        console.log('Vampire is colliding with:', other);
         this.changeDirection();
     }
 
     onWorldBounds() {
-        console.log('Vampire hit world bounds');
         this.changeDirection();
+    }
+}
+
+export class Vampire_2 extends Vampire {
+    constructor(scene, x, y) {
+        super(scene, x, y);
+        
+        // Create wall detection rectangles with more visible colors
+        this.wallDetectors = {
+            left: this.scene.add.rectangle(x - 50, y, 10, 50, 0xff0000, 0.5),
+            right: this.scene.add.rectangle(x + 50, y, 10, 50, 0x00ff00, 0.5),
+            up: this.scene.add.rectangle(x, y - 50, 50, 10, 0x0000ff, 0.5),
+            down: this.scene.add.rectangle(x, y + 50, 50, 10, 0xffff00, 0.5)
+        };
+
+        // Set depth for all detectors to be visible above the vampire
+        Object.values(this.wallDetectors).forEach(detector => {
+            detector.setDepth(20);
+            detector.setScrollFactor(0);
+            // Enable physics on the detectors
+            this.scene.physics.world.enable(detector);
+            detector.body.setImmovable(true);
+            detector.body.setSize(10, 10); // Set explicit size for physics body
+        });
+
+        // Initialize collidable layers as null
+        this.collidableLayers = null;
+    }
+
+    initializeLayers() {
+        // Get the existing layers from the Game scene
+        this.collidableLayers = [
+            this.scene.layers.tree,
+            this.scene.layers.water,
+            this.scene.layers.water_detalization,
+            this.scene.layers.ground,
+            this.scene.layers.bridge,
+            this.scene.layers.elevated_space,
+            this.scene.layers.curved_ground,
+            this.scene.layers.foliage2,
+            this.scene.layers.border,
+            this.scene.layers.object4,
+            this.scene.layers.object1,
+            this.scene.layers.object3,
+            this.scene.layers.bricks,
+            this.scene.layers.object2,
+            this.scene.layers.foliage
+        ].filter(layer => layer);
+
+        console.log('Collidable layers initialized:', this.collidableLayers.length);
+        console.log('Available layers:', Object.keys(this.scene.layers));
+    }
+
+    update() {
+        super.update();
+        
+        // Update detector positions directly
+        this.wallDetectors.left.setPosition(this.x - 50, this.y);
+        this.wallDetectors.right.setPosition(this.x + 50, this.y);
+        this.wallDetectors.up.setPosition(this.x, this.y - 50);
+        this.wallDetectors.down.setPosition(this.x, this.y + 50);
+
+        // Check for overlaps with collidable layers
+        if (this.collidableLayers) {
+            Object.entries(this.wallDetectors).forEach(([direction, detector]) => {
+                this.collidableLayers.forEach(layer => {
+                    const overlap = this.scene.physics.overlap(detector, layer);
+                    if (overlap) {
+                        console.log(`Wall detected in ${direction} direction!`);
+                    }
+                });
+            });
+        }
+    }
+
+    destroy() {
+        // Clean up the wall detectors when the vampire is destroyed
+        Object.values(this.wallDetectors).forEach(detector => {
+            detector.destroy();
+        });
+        super.destroy();
     }
 }

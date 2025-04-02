@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import { Warrior } from '../entities/Warrior';
-import { Vampire } from '../entities/Vampire';
+import { Vampire, Vampire_2 } from '../entities/Vampire';
 
 export class Game extends Scene {
     constructor() {
@@ -66,7 +66,7 @@ export class Game extends Scene {
 
         // Create player and vampire using the new classes
         this.player = new Warrior(this, 270, 210);
-        this.vampire = new Vampire(this, 950, 410);
+        this.vampire = new Vampire_2(this, 950, 410);
         this.vampire2 = new Vampire(this, 600, 600);
         this.vampire3 = new Vampire(this, 230, 575);
         this.vampire4 = new Vampire(this, 700, 20);
@@ -136,50 +136,47 @@ export class Game extends Scene {
         let waterCoastsTileset = map.addTilesetImage('water_coasts', 'water_coasts');
         let waterDetilazationTileset = map.addTilesetImage('Water_detilazation', 'Water_detilazation');
 
-        let treeLayer = map.createLayer('tree', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let waterLayer = map.createLayer('water', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let waterDetalizationLayer = map.createLayer('water_detalization', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let groundLayer = map.createLayer('ground', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let bridgeLayer = map.createLayer('bridge', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let elevatedSpaceLayer = map.createLayer('elevated_space', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let curvedGroundLayer = map.createLayer('curved_ground', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let foliage2Layer = map.createLayer('foliage2', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let borderLayer = map.createLayer('border', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let object4Layer = map.createLayer('object4', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let object1Layer = map.createLayer('object1', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let object3Layer = map.createLayer('object3', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let bricksLayer = map.createLayer('bricks', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let object2Layer = map.createLayer('object2', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
-        let foliageLayer = map.createLayer('foliage', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0);
+        // Store layers in the scene
+        this.layers = {
+            tree: map.createLayer('tree', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            water: map.createLayer('water', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            water_detalization: map.createLayer('water_detalization', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            ground: map.createLayer('ground', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            bridge: map.createLayer('bridge', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            elevated_space: map.createLayer('elevated_space', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            curved_ground: map.createLayer('curved_ground', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            foliage2: map.createLayer('foliage2', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            border: map.createLayer('border', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            object4: map.createLayer('object4', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            object1: map.createLayer('object1', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            object3: map.createLayer('object3', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            bricks: map.createLayer('bricks', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            object2: map.createLayer('object2', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0),
+            foliage: map.createLayer('foliage', [groundRocksTileset, objectsTileset, objectsAnimated3Tileset, waterCoastsTileset, waterDetilazationTileset], 0, 0)
+        };
 
-        treeLayer.setDepth(20);
+        this.layers.tree.setDepth(20);
 
-        let layers = [
-            treeLayer, waterLayer, waterDetalizationLayer, groundLayer, bridgeLayer, elevatedSpaceLayer,
-            curvedGroundLayer, foliage2Layer, borderLayer, object4Layer, object1Layer,
-            object3Layer, bricksLayer, object2Layer, foliageLayer
-        ];
-        
         // Set collision for all layers
-        layers.forEach(layer => {
+        Object.values(this.layers).forEach(layer => {
             if (layer) {
                 layer.setCollisionByProperty({ collide: true });
                 this.physics.add.collider(this.player, layer);
-                this.physics.add.collider(this.vampire, layer, this.vampire.onCollisionEnter);
-                this.physics.add.collider(this.vampire2, layer, this.vampire2.onCollisionEnter);
-                this.physics.add.collider(this.vampire3, layer, this.vampire3.onCollisionEnter);
-                this.physics.add.collider(this.vampire4, layer, this.vampire4.onCollisionEnter);
+                this.physics.add.collider([this.vampire, this.vampire2, this.vampire3, this.vampire4], layer, (vampire) => vampire.onCollisionEnter());
             }
         });
 
         // Scale all layers
-        layers.forEach(layer => {
+        Object.values(this.layers).forEach(layer => {
             if (layer) {
                 layer.setScale(2);
             }
         });
         
         this.animatedTiles.init(map);
+
+        // Initialize the vampire's layers after map is created
+        this.vampire.initializeLayers();
     }
 
     createAnimations() {
