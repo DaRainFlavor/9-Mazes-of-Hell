@@ -174,9 +174,6 @@ export class Game extends Scene {
         });
         
         this.animatedTiles.init(map);
-
-        // Initialize the vampire's layers after map is created
-        this.vampire.initializeLayers();
     }
 
     createAnimations() {

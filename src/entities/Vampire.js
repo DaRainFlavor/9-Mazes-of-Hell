@@ -86,13 +86,16 @@ export class Vampire extends Character {
 export class Vampire_2 extends Vampire {
     constructor(scene, x, y) {
         super(scene, x, y);
-        
+        this.createWallDetectors(x, y);
+    }
+
+    createWallDetectors(x, y) {
         // Create wall detection rectangles with more visible colors
         this.wallDetectors = {
-            left: this.scene.add.rectangle(x - 50, y, 10, 50, 0xff0000, 0.5),
-            right: this.scene.add.rectangle(x + 50, y, 10, 50, 0x00ff00, 0.5),
-            up: this.scene.add.rectangle(x, y - 50, 50, 10, 0x0000ff, 0.5),
-            down: this.scene.add.rectangle(x, y + 50, 50, 10, 0xffff00, 0.5)
+            left: this.scene.add.rectangle(x - 30, y, 10, 25, 0xff0000, 0.5),
+            right: this.scene.add.rectangle(x + 30, y, 10, 25, 0x00ff00, 0.5),
+            up: this.scene.add.rectangle(x, y - 30, 25, 10, 0x0000ff, 0.5),
+            down: this.scene.add.rectangle(x, y + 30, 25, 10, 0xffff00, 0.5)
         };
 
         // Set depth for all detectors to be visible above the vampire
@@ -102,57 +105,53 @@ export class Vampire_2 extends Vampire {
             // Enable physics on the detectors
             this.scene.physics.world.enable(detector);
             detector.body.setImmovable(true);
-            detector.body.setSize(10, 10); // Set explicit size for physics body
+            detector.body.setSize(20, 20); // Set explicit size for physics body
         });
-
-        // Initialize collidable layers as null
-        this.collidableLayers = null;
     }
 
-    initializeLayers() {
-        // Get the existing layers from the Game scene
-        this.collidableLayers = [
-            this.scene.layers.tree,
-            this.scene.layers.water,
-            this.scene.layers.water_detalization,
-            this.scene.layers.ground,
-            this.scene.layers.bridge,
-            this.scene.layers.elevated_space,
-            this.scene.layers.curved_ground,
-            this.scene.layers.foliage2,
-            this.scene.layers.border,
-            this.scene.layers.object4,
-            this.scene.layers.object1,
-            this.scene.layers.object3,
-            this.scene.layers.bricks,
-            this.scene.layers.object2,
-            this.scene.layers.foliage
-        ].filter(layer => layer);
+    checkWallDetection() {
+        // Initialize detection results
+        const detectionResults = {
+            left: false,
+            right: false,
+            up: false,
+            down: false
+        };
 
-        console.log('Collidable layers initialized:', this.collidableLayers.length);
-        console.log('Available layers:', Object.keys(this.scene.layers));
+        // Check for walls in all directions
+        Object.entries(this.wallDetectors).forEach(([direction, detector]) => {
+            // Update detector position based on direction
+
+            const yWithOffset = this.y + 10;
+            const distance = 20;
+            switch(direction) {
+                case 'left': detector.setPosition(this.x - distance, yWithOffset); break;
+                case 'right': detector.setPosition(this.x + distance, yWithOffset); break;
+                case 'up': detector.setPosition(this.x, yWithOffset - distance); break;
+                case 'down': detector.setPosition(this.x, yWithOffset + distance); break;
+            }
+
+            // Check for walls
+            Object.values(this.scene.layers).forEach(layer => {
+                if (layer) {
+                    // Check if the layer has collision tiles at the detector's position
+                    const tile = layer.getTileAtWorldXY(detector.x, detector.y);
+                    if (tile && tile.properties.collide) {
+                        console.log(`Wall detected in ${direction} direction!`);
+                        detectionResults[direction] = true;
+                    }
+                }
+            });
+        });
+
+        return detectionResults;
     }
 
     update() {
-        super.update();
-        
-        // Update detector positions directly
-        this.wallDetectors.left.setPosition(this.x - 50, this.y);
-        this.wallDetectors.right.setPosition(this.x + 50, this.y);
-        this.wallDetectors.up.setPosition(this.x, this.y - 50);
-        this.wallDetectors.down.setPosition(this.x, this.y + 50);
-
-        // Check for overlaps with collidable layers
-        if (this.collidableLayers) {
-            Object.entries(this.wallDetectors).forEach(([direction, detector]) => {
-                this.collidableLayers.forEach(layer => {
-                    const overlap = this.scene.physics.overlap(detector, layer);
-                    if (overlap) {
-                        console.log(`Wall detected in ${direction} direction!`);
-                    }
-                });
-            });
-        }
+        this.move('down');
+        const wallDetections = this.checkWallDetection();
+        console.log(wallDetections);
+        // You can now use wallDetections.left, wallDetections.right, etc.
     }
 
     destroy() {
