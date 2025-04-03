@@ -120,11 +120,12 @@ export class Vampire_2 extends Vampire {
     createWallDetectors(x, y) {
         // Create wall detection rectangles with more visible colors
         const width = 30;
+        const detectorVisibility = 0.5;
         this.wallDetectors = {
-            left: this.scene.add.rectangle(x - 30, y, 10, width, 0xff0000, 0.5),
-            right: this.scene.add.rectangle(x + 30, y, 10, width, 0x00ff00, 0.5),
-            up: this.scene.add.rectangle(x, y - 30, width, 10, 0x0000ff, 0.5),
-            down: this.scene.add.rectangle(x, y + 30, width, 10, 0xffff00, 0.5)
+            left: this.scene.add.rectangle(x - 30, y, 10, width, 0xff0000, detectorVisibility),
+            right: this.scene.add.rectangle(x + 30, y, 10, width, 0x00ff00, detectorVisibility),
+            up: this.scene.add.rectangle(x, y - 30, width, 10, 0x0000ff, detectorVisibility),
+            down: this.scene.add.rectangle(x, y + 30, width, 10, 0xffff00, detectorVisibility)
         };
 
         // Set depth for all detectors to be visible above the vampire
@@ -200,7 +201,7 @@ export class Vampire_2 extends Vampire {
         else {
             const wallDetections = this.checkWallDetection();
             if (this.fpsdiv % 4 === 0) {
-                this.setDirectionByWallAlgo(wallDetections);
+                this.setDirectionByWallAlgo(wallDetections, false);
             }
         }
         this.move(this.direction);
@@ -214,14 +215,25 @@ export class Vampire_2 extends Vampire {
         super.destroy();
     }
 
-    setDirectionByWallAlgo(wallDetections) {
-        if(this.checkIfBlocked()) {
-            this.direction = this.leftOf(this.direction);
-            return;
+    setDirectionByWallAlgo(wallDetections, clockwise) {
+        if(clockwise) {
+            if(this.checkIfBlocked()) {
+                this.direction = this.rightOf(this.direction);
+                return;
+            }
+            if(!wallDetections[this.leftOf(this.direction)]) {
+                this.direction = this.leftOf(this.direction);
+            }
         }
-        if(!wallDetections[this.rightOf(this.direction)]) {
-            this.direction = this.rightOf(this.direction);
-       
+        else{
+            if(this.checkIfBlocked()) {
+                this.direction = this.leftOf(this.direction);
+                return;
+            }
+            if(!wallDetections[this.rightOf(this.direction)]) {
+                this.direction = this.rightOf(this.direction);
+        
+            }
         }
     }
 
@@ -263,11 +275,13 @@ export class Vampire_2 extends Vampire {
 
 }
 
-export class Vampire_3 extends Vampire {
+export class Vampire_3 extends Vampire_2 {
     constructor(scene, x, y) {
         super(scene, x, y);
         this.direction = 'right';
         this.fpsdiv = 0;
+        this.blockedTimer = 0;
+        this.haveBeenBlocked = 0;
     }
     
     update() {
@@ -294,7 +308,31 @@ export class Vampire_3 extends Vampire {
         const distanceY = Math.abs(this.scene.player.y - this.y);
         const horizontalDirection = this.scene.player.x > this.x ? 'right' : 'left';
         const verticalDirection = this.scene.player.y > this.y ? 'down' : 'up';
-    
+        
+        const wallDetections = this.checkWallDetection();
+        const Blocked = !this.body.blocked.none;
+        let clockwise = true;
+
+
+        if(this.blockedTimer) {
+            this.blockedTimer--;
+            
+            
+            this.speed = 150;
+            this.setDirectionByWallAlgo(wallDetections, clockwise);
+            this.move(this.direction);
+            return;
+        }
+        if (this.haveBeenBlocked > 100) {
+            this.haveBeenBlocked = 0;
+            this.blockedTimer = 300;
+            return;
+        }
+        if(Blocked) {
+            this.haveBeenBlocked++;
+        }
+            
+
         if (distanceX > distanceY) {
             if (this.fpsdiv % 2 == 0) {
                 this.move(horizontalDirection);
@@ -311,3 +349,5 @@ export class Vampire_3 extends Vampire {
     }
 
 }
+
+
