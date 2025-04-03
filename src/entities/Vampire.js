@@ -167,7 +167,7 @@ export class Vampire_2 extends Vampire {
                     // Check if the layer has collision tiles at the detector's position
                     const tile = layer.getTileAtWorldXY(detector.x, detector.y);
                     if (tile && tile.properties.collide) {
-                        console.log(`Wall detected in ${direction} direction!`);
+                        // console.log(`Wall detected in ${direction} direction!`);
                         detectionResults[direction] = true;
                     }
                 }
@@ -195,7 +195,6 @@ export class Vampire_2 extends Vampire {
             if (this.body.blocked.right) {
                 this.direction = 'up';
                 this.attached = true;
-                console.log('attached to wall');
             }
         }
         else {
@@ -204,7 +203,6 @@ export class Vampire_2 extends Vampire {
                 this.setDirectionByWallAlgo(wallDetections);
             }
         }
-        console.log('direction: ' + this.direction);
         this.move(this.direction);
     }
 
@@ -219,7 +217,6 @@ export class Vampire_2 extends Vampire {
     setDirectionByWallAlgo(wallDetections) {
         if(this.checkIfBlocked()) {
             this.direction = this.leftOf(this.direction);
-            console.log('turned to ' + this.leftOf(this.direction) + this.direction);
             return;
         }
         if(!wallDetections[this.rightOf(this.direction)]) {
@@ -242,7 +239,6 @@ export class Vampire_2 extends Vampire {
         else if(direction === 'down') {
             return this.body.blocked.down;
         }
-        console.log('blocked in ' + direction);
     }
 
     rightOf(direction) {
@@ -262,6 +258,55 @@ export class Vampire_2 extends Vampire {
             case 'left': return 'down';
             case 'down': return 'right';
             default: return 'bogol';
+        }
+    }
+
+}
+
+export class Vampire_3 extends Vampire {
+    constructor(scene, x, y) {
+        super(scene, x, y);
+        this.direction = 'right';
+        this.fpsdiv = 0;
+    }
+    
+    update() {
+        console.log('message from vampire 3');
+
+        this.algorithm();
+
+        this.fpsdiv++;
+
+    }
+    move(direction) {
+        switch (direction) {
+            case 'left': this.body.setVelocity(-this.speed, 0); break;
+            case 'right': this.body.setVelocity(this.speed, 0); break;
+            case 'up': this.body.setVelocity(0, -this.speed); break;
+            case 'down': this.body.setVelocity(0, this.speed); break;
+        }
+        if(this.fpsdiv % 8 == 0)
+        this.playAnimation(`vampire-walk-${direction}`);
+    }
+
+    algorithm() {
+        const distanceX = Math.abs(this.scene.player.x - this.x);
+        const distanceY = Math.abs(this.scene.player.y - this.y);
+        const horizontalDirection = this.scene.player.x > this.x ? 'right' : 'left';
+        const verticalDirection = this.scene.player.y > this.y ? 'down' : 'up';
+    
+        if (distanceX > distanceY) {
+            if (this.fpsdiv % 2 == 0) {
+                this.move(horizontalDirection);
+            } else {
+                this.move(verticalDirection);
+            }
+        } else {
+            if (this.fpsdiv % 2 == 0) {
+                this.move(verticalDirection);
+            } else {
+                this.move(horizontalDirection);
+            }
         }
     }
 

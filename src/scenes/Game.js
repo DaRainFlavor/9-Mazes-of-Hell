@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import { Warrior } from '../entities/Warrior';
-import { Vampire, Vampire_1, Vampire_2 } from '../entities/Vampire';
+import { Vampire, Vampire_1, Vampire_2, Vampire_3 } from '../entities/Vampire';
 
 export class Game extends Scene {
     constructor() {
@@ -69,7 +69,7 @@ export class Game extends Scene {
         this.vampire = new Vampire_2(this, 950, 410);
         this.vampire2 = new Vampire_2(this, 550, 650);
         this.vampire3 = new Vampire_2(this, 230, 575);
-        this.vampire4 = new Vampire_2(this, 700, 650);
+        this.vampire4 = new Vampire_3(this, 700, 650);
 
         this.physics.add.overlap(this.player, [this.vampire, this.vampire2, this.vampire3, this.vampire4], this.handlePlayerVampireCollision, null, this);
 

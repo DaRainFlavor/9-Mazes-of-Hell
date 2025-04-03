@@ -53,6 +53,7 @@ export class Warrior extends Character {
     }
 
     update(cursors) {
+        console.log(this.x + ' ' + this.y);
         if (this.isAttacking) return;
         
         this.stop();
