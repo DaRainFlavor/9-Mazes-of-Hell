@@ -1,5 +1,6 @@
 import { Character } from './Character';
 
+
 export class Vampire extends Character {
     constructor(scene, x, y) {
         super(scene, x, y, 'vampire-walk-down');
@@ -27,6 +28,29 @@ export class Vampire extends Character {
             loop: true
         });
     }
+
+    update() {
+        //do nothing
+    }
+
+    move(direction) {
+        //do nothing
+    }
+
+    onCollisionEnter(other) {
+        //do nothing
+    }
+
+    onWorldBounds() {
+        //do nothing
+    }
+
+    changeDirection() {
+        //do nothing
+    }
+}
+
+export class Vampire_1 extends Vampire {
 
     update() {
         if (this.isIdle) {
@@ -87,15 +111,20 @@ export class Vampire_2 extends Vampire {
     constructor(scene, x, y) {
         super(scene, x, y);
         this.createWallDetectors(x, y);
+        this.direction = 'right';
+        this.attached = false;
+
+        this.fpsdiv = 0;
     }
 
     createWallDetectors(x, y) {
         // Create wall detection rectangles with more visible colors
+        const width = 30;
         this.wallDetectors = {
-            left: this.scene.add.rectangle(x - 30, y, 10, 25, 0xff0000, 0.5),
-            right: this.scene.add.rectangle(x + 30, y, 10, 25, 0x00ff00, 0.5),
-            up: this.scene.add.rectangle(x, y - 30, 25, 10, 0x0000ff, 0.5),
-            down: this.scene.add.rectangle(x, y + 30, 25, 10, 0xffff00, 0.5)
+            left: this.scene.add.rectangle(x - 30, y, 10, width, 0xff0000, 0.5),
+            right: this.scene.add.rectangle(x + 30, y, 10, width, 0x00ff00, 0.5),
+            up: this.scene.add.rectangle(x, y - 30, width, 10, 0x0000ff, 0.5),
+            down: this.scene.add.rectangle(x, y + 30, width, 10, 0xffff00, 0.5)
         };
 
         // Set depth for all detectors to be visible above the vampire
@@ -123,12 +152,13 @@ export class Vampire_2 extends Vampire {
             // Update detector position based on direction
 
             const yWithOffset = this.y + 10;
-            const distance = 20;
+            const distance = 18;
+            const counterclockwise = 0;
             switch(direction) {
-                case 'left': detector.setPosition(this.x - distance, yWithOffset); break;
-                case 'right': detector.setPosition(this.x + distance, yWithOffset); break;
-                case 'up': detector.setPosition(this.x, yWithOffset - distance); break;
-                case 'down': detector.setPosition(this.x, yWithOffset + distance); break;
+                case 'left': detector.setPosition(this.x - distance, yWithOffset + counterclockwise); break;
+                case 'right': detector.setPosition(this.x + distance, yWithOffset - counterclockwise); break;
+                case 'up': detector.setPosition(this.x - counterclockwise, yWithOffset - distance); break;
+                case 'down': detector.setPosition(this.x + counterclockwise, yWithOffset + distance); break;
             }
 
             // Check for walls
@@ -147,11 +177,35 @@ export class Vampire_2 extends Vampire {
         return detectionResults;
     }
 
+    move(direction) {
+        switch (direction) {
+            case 'left': this.body.setVelocity(-this.speed, 0); break;
+            case 'right': this.body.setVelocity(this.speed, 0); break;
+            case 'up': this.body.setVelocity(0, -this.speed); break;
+            case 'down': this.body.setVelocity(0, this.speed); break;
+        }
+        if(this.fpsdiv % 8 == 0)
+            this.playAnimation(`vampire-walk-${direction}`);
+    }
+
     update() {
-        this.move('down');
-        const wallDetections = this.checkWallDetection();
-        console.log(wallDetections);
-        // You can now use wallDetections.left, wallDetections.right, etc.
+        this.fpsdiv++;
+
+        if (!this.attached) {
+            if (this.body.blocked.right) {
+                this.direction = 'up';
+                this.attached = true;
+                console.log('attached to wall');
+            }
+        }
+        else {
+            const wallDetections = this.checkWallDetection();
+            if (this.fpsdiv % 4 === 0) {
+                this.setDirectionByWallAlgo(wallDetections);
+            }
+        }
+        console.log('direction: ' + this.direction);
+        this.move(this.direction);
     }
 
     destroy() {
@@ -161,4 +215,54 @@ export class Vampire_2 extends Vampire {
         });
         super.destroy();
     }
+
+    setDirectionByWallAlgo(wallDetections) {
+        if(this.checkIfBlocked()) {
+            this.direction = this.leftOf(this.direction);
+            console.log('turned to ' + this.leftOf(this.direction) + this.direction);
+            return;
+        }
+        if(!wallDetections[this.rightOf(this.direction)]) {
+            this.direction = this.rightOf(this.direction);
+       
+        }
+    }
+
+    checkIfBlocked() {
+        const  direction = this.direction;
+        if(direction === 'right') {
+            return this.body.blocked.right;
+        }
+        else if(direction === 'left') {
+            return this.body.blocked.left;
+        }
+        else if(direction === 'up') {
+            return this.body.blocked.up;
+        }
+        else if(direction === 'down') {
+            return this.body.blocked.down;
+        }
+        console.log('blocked in ' + direction);
+    }
+
+    rightOf(direction) {
+        switch(direction) {
+            case 'right': return 'down';
+            case 'down': return 'left';
+            case 'left': return 'up';
+            case 'up': return 'right';  
+            default: return 'bogor';
+        }
+    }
+
+    leftOf(direction) {
+        switch(direction) {
+            case 'right': return 'up';
+            case 'up': return 'left';
+            case 'left': return 'down';
+            case 'down': return 'right';
+            default: return 'bogol';
+        }
+    }
+
 }
