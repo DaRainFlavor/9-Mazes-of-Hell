@@ -66,7 +66,7 @@ export class Game extends Scene {
 
         // Create player and vampire using the new classes
         this.player = new Warrior(this, 270, 210);
-        this.vampire = new Vampire_2(this, 950, 410);
+        this.vampire = new Vampire_3(this, 950, 410);
         this.vampire2 = new Vampire_2(this, 550, 650);
         this.vampire3 = new Vampire_2(this, 230, 575);
         this.vampire4 = new Vampire_3(this, 700, 650);

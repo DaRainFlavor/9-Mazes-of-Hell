@@ -120,7 +120,7 @@ export class Vampire_2 extends Vampire {
     createWallDetectors(x, y) {
         // Create wall detection rectangles with more visible colors
         const width = 30;
-        const detectorVisibility = 0.5;
+        const detectorVisibility = 0;
         this.wallDetectors = {
             left: this.scene.add.rectangle(x - 30, y, 10, width, 0xff0000, detectorVisibility),
             right: this.scene.add.rectangle(x + 30, y, 10, width, 0x00ff00, detectorVisibility),
@@ -308,7 +308,7 @@ export class Vampire_3 extends Vampire_2 {
         const distanceY = Math.abs(this.scene.player.y - this.y);
         const horizontalDirection = this.scene.player.x > this.x ? 'right' : 'left';
         const verticalDirection = this.scene.player.y > this.y ? 'down' : 'up';
-        
+
         const wallDetections = this.checkWallDetection();
         const Blocked = !this.body.blocked.none;
         let clockwise = true;
@@ -334,14 +334,20 @@ export class Vampire_3 extends Vampire_2 {
             
 
         if (distanceX > distanceY) {
+            const ratio = distanceX / distanceY;
             if (this.fpsdiv % 2 == 0) {
-                this.move(horizontalDirection);
+                for (let i = 0; i < ratio; i++) {
+                    this.move(horizontalDirection);
+                }
             } else {
                 this.move(verticalDirection);
             }
         } else {
+            const ratio = distanceY / distanceX;
             if (this.fpsdiv % 2 == 0) {
-                this.move(verticalDirection);
+                for (let i = 0; i < ratio; i++) {
+                    this.move(verticalDirection);
+                }
             } else {
                 this.move(horizontalDirection);
             }
