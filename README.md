@@ -3,7 +3,7 @@
 
 ## Description
 
-This is a simple game made with Phaser 3. It is a platformer game where the player can move around the screen and collect items.
+This is a simple game made with Phaser 3. It is a maze game where the player can move around the screen and has to reach the exit.
 
 ## steps to run the game
 
